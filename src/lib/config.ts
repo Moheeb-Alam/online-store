@@ -6,7 +6,7 @@ export const SITE = {
   tagline: "Original beauty products, delivered across Pakistan",
   phone: "+92 300 0000000",
   email: "support@example.com",
-  whatsapp: "923000000000",
+  whatsapp: "923423329094",
   /** Shown in the "Visit us" card and its map on the home page. */
   address: "Main Boulevard, Gulberg III, Lahore",
   hours: "Mon – Sat: 10am – 8pm",
