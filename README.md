@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GlowUp Beauty: online cosmetics store
 
-## Getting Started
+An online store for skincare, makeup, fragrance and haircare, built with Next.js 16 and Supabase.
+Customers pay with Cash on Delivery.
 
-First, run the development server:
+## What's included
+
+**Store**
+- Home page with categories and bestsellers
+- Shop page with category filters, search and sorting
+- Product pages with stock status and related products
+- Cart (saved in the browser) and a free-delivery progress hint
+- Checkout with Cash on Delivery. Prices and stock are checked in the database, never trusted from the browser.
+- Order tracking with order number + mobile number
+
+**Admin panel** (`/admin`, login at `/login`)
+- Order dashboard: totals, pending count, sales, low-stock count
+- Change order status (pending → confirmed → shipped → delivered / cancelled)
+- Order detail with a one-click WhatsApp confirmation message
+- Add, edit, hide and delete products
+
+## Run it
+
+> On this PC the folder is really named `New folder` (small "f"). Open the terminal in
+> `C:\Users\Ali\Desktop\New folder\beauty-store`. A path with different casing can break the build.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000. Without Supabase, the store runs in **demo mode**: you get sample
+products, and orders are not saved.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Connect Supabase (real orders)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Create a free project at https://supabase.com.
+2. In `supabase/schema.sql`, scroll to **section 7** and set your admin email and password.
+   Then open **SQL Editor → New query**, paste the whole file, and click **Run**.
+   This creates the tables, security rules, order functions, 12 sample products and your admin login.
+3. Copy `.env.local.example` to `.env.local` and fill in from **Project Settings → API Keys**:
+   the Project URL, the publishable (anon) key, and the **secret** (service_role) key.
+   The secret key is used only on the server for the admin panel. Never share it.
+4. Your admin account is now in the `admin_users` table (the password is saved bcrypt-hashed,
+   not as plain text). To change the password, edit section 7 and run the file again, or run:
+   ```sql
+   update public.admin_users set password_hash = crypt('NewPassword', gen_salt('bf'))
+   where email = lower('you@example.com');
+   ```
+5. Restart `npm run dev` and sign in at http://localhost:3000/login.
 
-## Learn More
+## Customize
 
-To learn more about Next.js, take a look at the following resources:
+- Store name, phone, WhatsApp, shipping fee: `src/lib/config.ts`. If you change shipping, also change it
+  in `place_order` in `supabase/schema.sql` and re-run that function.
+- Colors and fonts: `src/app/globals.css` and `src/app/layout.tsx`.
+- Product images: paste an `https://` image URL in the admin product form. You can upload images to
+  Supabase Storage (public bucket) and use their public URL.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Push to GitHub, import the repo on https://vercel.com, and add the two `NEXT_PUBLIC_SUPABASE_*`
+environment variables.
 
-## Deploy on Vercel
+## Next steps (roadmap)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- JazzCash / Easypaisa / card payments (Safepay or PayFast)
+- Courier booking API (TCS, Leopards, PostEx, Trax)
+- SMS/WhatsApp notification when an order is placed
+- Return cancelled orders' stock to inventory automatically
+- Image upload from the admin panel (Supabase Storage)
+- Customer accounts, reviews, wishlist, coupon codes

@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // WhatsApp (Baileys) runs inside the Node.js server; load these with plain
+  // Node require instead of bundling them.
+  serverExternalPackages: ["baileys", "pino", "qrcode"],
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {
